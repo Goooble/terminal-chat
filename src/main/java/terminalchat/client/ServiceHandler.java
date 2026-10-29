@@ -17,9 +17,14 @@ public final class ServiceHandler implements Runnable, AutoCloseable {
     private BufferedWriter output;
     private BufferedReader input;
     private volatile boolean intentionalClose;
+    private String username;
 
     public ServiceHandler(Renderer renderer) {
         this.renderer = Objects.requireNonNull(renderer, "renderer");
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     /**
@@ -79,7 +84,7 @@ public final class ServiceHandler implements Runnable, AutoCloseable {
             while ((line = reader.readLine()) != null) {
                 if (line.startsWith("FROM ")) {
                     String[] parts = line.split(" ", 3);
-                    renderer.printLine(parts.length == 3 ? parts[1] + " > " + parts[2] : line);
+                    renderer.printLine(parts.length == 3 ? parts[1] + "> " + parts[2] : line);
                 } else {
                     renderer.printLine(line);
                 }
@@ -116,7 +121,7 @@ public final class ServiceHandler implements Runnable, AutoCloseable {
             output.write("SEND " + friend + " " + message);
             output.write('\n');
             output.flush();
-            renderer.printLine("you:" + friend + " > " + message);
+            renderer.printLine(username+":" + friend + "> " + message);
             return true;
         } catch (IOException failure) {
             try {

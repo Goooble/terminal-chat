@@ -136,6 +136,8 @@
 
 ## Next step
 
+Display refinement: user reported submitted prompt input remaining above the formatted outgoing echo. Renderer now enables JLine ERASE_LINE_ON_FINISH, preserving editing while typing but clearing the submitted prompt/input line after Enter. The application's formatted outgoing echo remains. Maven compile and existing interactive renderer checks passed. This addresses input-line duplication, not the separate local/server echo of messages addressed to self.
+
 Latest design implemented: /hello creates new Thread(serviceHandler), then calls serviceHandler.connect(username) synchronously on Console's main thread. connect now waits for the exact OK username reply, returning true only on accepted registration. Console prints connected then calls Thread.start(), which executes Runnable.run on the background receiver. On false, the connection attempt is closed, connectionThread becomes null, and Console prints retry. Thread has no connect method; calling run directly would not create a new thread. No registered boolean or callback is needed or restored.
 
 Current slice: user asked to correct slash-only command routing and add /send and /quit, with only a basic ServiceHandler implementation. Console now dispatches lines beginning with / to handleCommand; ordinary text calls text(currentFriend,line), preserving message whitespace. /send validates syntax, selects any name without checking existence, and changes the next prompt. /quit returns false to end the loop. Finally resets registration, closes the connection before join, and prints quitting application. Blank lines are ignored.

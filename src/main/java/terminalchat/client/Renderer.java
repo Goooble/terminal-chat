@@ -35,6 +35,7 @@ public final class Renderer implements AutoCloseable {
                             .eofOnUnclosedQuote(false)
                             .eofOnEscapedNewLine(false))
                     .option(LineReader.Option.DISABLE_EVENT_EXPANSION, true)
+                    .option(LineReader.Option.ERASE_LINE_ON_FINISH, true)
                     .build();
         } catch (RuntimeException | Error failure) {
             try {

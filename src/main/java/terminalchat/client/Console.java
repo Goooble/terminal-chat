@@ -8,6 +8,7 @@ public final class Console {
     private static ServiceHandler serviceHandler;
     private static Thread connectionThread;
     private static String currentFriend = "me";
+    private static String username = "me";
 
     public static void main(String[] args) throws IOException, InterruptedException {
         try (Renderer terminal = new Renderer();
@@ -18,7 +19,7 @@ public final class Console {
 
             try {
                 String line;
-                while ((line = renderer.readLine("[" + currentFriend + "] > ")) != null) {
+                while ((line = renderer.readLine("[" + currentFriend + "]> ")) != null) {
                     if (line.trim().isEmpty()) {
                         continue;
                     }
@@ -49,6 +50,7 @@ public final class Console {
         String[] parts = line.split("\\s+", 2);
         switch (parts[0]) {
             case "/hello":
+
                 if (parts.length != 2 || !parts[1].matches("[A-Za-z0-9_-]{1,32}")) {
                     renderer.printLine("Usage: /hello <username> (1-32 letters, digits, _ or -)");
                     return true;
@@ -59,8 +61,12 @@ public final class Console {
                 }
                 connectionThread = new Thread(serviceHandler, "server-connection");
                 if (serviceHandler.connect(parts[1])) {
+                    username = parts[1];
+                    serviceHandler.setUsername(username);
+
                     renderer.printLine("connected");
                     connectionThread.start();
+
                 } else {
                     connectionThread = null;
                     renderer.printLine("retry");
