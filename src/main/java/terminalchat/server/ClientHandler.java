@@ -31,7 +31,9 @@ public final class ClientHandler implements Runnable {
             String line;
             while ((line = input.readLine()) != null) {
                 if (username == null) {
-                    handleHello(line);
+                    if (!handleHello(line)) {
+                        break;
+                    }
                 } else {
                     handleMessage(line);
                 }
@@ -46,16 +48,16 @@ public final class ClientHandler implements Runnable {
         }
     }
 
-    private void handleHello(String line) throws IOException {
+    private boolean handleHello(String line) throws IOException {
         String[] parts = line.trim().split("\\s+");
         if (parts.length != 2 || !parts[0].equals("HELLO")) {
             send("ERROR EXPECTED_HELLO");
-            return;
+            return false;
         }
         String requestedName = parts[1];
         if (!requestedName.matches("[A-Za-z0-9_-]{1,32}") || requestedName.equals("me")) {
             send("ERROR INVALID_USERNAME");
-            return;
+            return false;
         }
 
         // Hold the same lock as send() so another sender cannot overtake OK
@@ -63,11 +65,12 @@ public final class ClientHandler implements Runnable {
         synchronized (this) {
             if (!registry.tryRegister(requestedName, this)) {
                 send("ERROR USERNAME_TAKEN");
-                return;
+                return false;
             }
             username = requestedName;
             send("OK " + username);
         }
+        return true;
     }
 
     private void handleMessage(String line) throws IOException {
