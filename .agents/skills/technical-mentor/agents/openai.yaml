@@ -1,0 +1,4 @@
+interface:
+  display_name: "Technical Mentor"
+  short_description: "You design; Codex codes, challenges, and teaches"
+  default_prompt: "Use $technical-mentor to help me design and vet classes, objects, functions, and pseudocode before you implement them. Proactively teach relevant new concepts and better alternatives, explain substantive deviations, and maintain learning.md with my progress and next steps."
